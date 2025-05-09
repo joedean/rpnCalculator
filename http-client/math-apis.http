@@ -1,0 +1,7 @@
+### GET cosine value
+GET https://api.mathjs.org/v4/?expr=cos(0deg)
+
+
+### GET fun facts about numbers
+GET http://numbersapi.com/42/math
+###
