@@ -80,4 +80,26 @@ class RPNCalculatorTest {
         RPNCalculator.processRPNExpression("4 +", stack);
         assertEquals(12.0, stack.peek());
     }
+
+    @Test
+    void testDecimalAddition() {
+        Stack<Double> stack = new Stack<>();
+        double result = RPNCalculator.processRPNExpression("5.5 3.3 +", stack);
+        assertEquals(8.8, result, 0.0001);
+    }
+
+    @Test
+    void testMultipleDecimalOperations() {
+        Stack<Double> stack = new Stack<>();
+        // First operation
+        RPNCalculator.processRPNExpression("5.5 3.3 +", stack);
+        // Second operation using the result from the first
+        double result = RPNCalculator.processRPNExpression("2.2 +", stack);
+        assertEquals(11.0, result, 0.0001);
+
+        // Clear stack and try a more complex sequence
+        stack.clear();
+        result = RPNCalculator.processRPNExpression("1.1 2.2 + 3.3 + 4.4 +", stack);
+        assertEquals(11.0, result, 0.0001);
+    }
 }

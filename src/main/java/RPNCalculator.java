@@ -1,7 +1,24 @@
 import java.util.Scanner;
 import java.util.Stack;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class RPNCalculator {
+
+    /**
+     * Rounds a double value to a specified number of decimal places.
+     *
+     * @param value The value to round.
+     * @param places The number of decimal places to round to.
+     * @return The rounded value.
+     */
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Decimal places must be >= 0");
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 
     /**
      * Processes a single RPN expression and updates the provided stack.
@@ -12,6 +29,11 @@ public class RPNCalculator {
      */
     public static double processRPNExpression(String expression, Stack<Double> stack) {
         String[] tokens = expression.trim().split("\\s+");
+
+        // Handle empty expression
+        if (tokens.length == 1 && tokens[0].isEmpty()) {
+            throw new NumberFormatException("empty String");
+        }
 
         for (String token : tokens) {
             if (token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/")) {
@@ -25,19 +47,19 @@ public class RPNCalculator {
                 double result;
                 switch (token) {
                     case "+":
-                        result = a + b;
+                        result = round(a + b, 10); // Round to 10 decimal places
                         break;
                     case "-":
-                        result = a - b;
+                        result = round(a - b, 10);
                         break;
                     case "*":
-                        result = a * b;
+                        result = round(a * b, 10);
                         break;
                     case "/":
                         if (b == 0) {
                             throw new ArithmeticException("Division by zero is not allowed.");
                         }
-                        result = a / b;
+                        result = round(a / b, 10);
                         break;
                     default:
                         throw new IllegalArgumentException("Invalid operator: " + token);
@@ -45,8 +67,13 @@ public class RPNCalculator {
 
                 stack.push(result);
             } else {
-                // Interpret token as a number and push it onto the stack
-                stack.push(Double.parseDouble(token));
+                try {
+                    // Interpret token as a number and push it onto the stack
+                    stack.push(Double.parseDouble(token));
+                } catch (NumberFormatException e) {
+                    // If the token is neither a recognized operator nor a valid number, throw an exception
+                    throw new IllegalArgumentException("Invalid operator: " + token);
+                }
             }
         }
 
