@@ -36,33 +36,45 @@ public class RPNCalculator {
         }
 
         for (String token : tokens) {
-            if (token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/")) {
-                if (stack.size() < 2) {
-                    throw new IllegalArgumentException("Insufficient values in the stack for operation.");
-                }
-
-                double b = stack.pop();
-                double a = stack.pop();
-
+            if (token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/") || token.equals("cos")) {
                 double result;
-                switch (token) {
-                    case "+":
-                        result = round(a + b, 10); // Round to 10 decimal places
-                        break;
-                    case "-":
-                        result = round(a - b, 10);
-                        break;
-                    case "*":
-                        result = round(a * b, 10);
-                        break;
-                    case "/":
-                        if (b == 0) {
-                            throw new ArithmeticException("Division by zero is not allowed.");
-                        }
-                        result = round(a / b, 10);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Invalid operator: " + token);
+
+                if (token.equals("cos")) {
+                    // Cosine is a unary operator, so it only needs one value from the stack
+                    if (stack.isEmpty()) {
+                        throw new IllegalArgumentException("Insufficient values in the stack for operation.");
+                    }
+                    double a = stack.pop();
+                    // Math.cos expects radians, so we use the value directly
+                    result = round(Math.cos(a), 10);
+                } else {
+                    // Binary operators need two values from the stack
+                    if (stack.size() < 2) {
+                        throw new IllegalArgumentException("Insufficient values in the stack for operation.");
+                    }
+
+                    double b = stack.pop();
+                    double a = stack.pop();
+
+                    switch (token) {
+                        case "+":
+                            result = round(a + b, 10); // Round to 10 decimal places
+                            break;
+                        case "-":
+                            result = round(a - b, 10);
+                            break;
+                        case "*":
+                            result = round(a * b, 10);
+                            break;
+                        case "/":
+                            if (b == 0) {
+                                throw new ArithmeticException("Division by zero is not allowed.");
+                            }
+                            result = round(a / b, 10);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Invalid operator: " + token);
+                    }
                 }
 
                 stack.push(result);

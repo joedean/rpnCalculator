@@ -3,6 +3,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static java.lang.Math.PI;
 
 class RPNCalculatorTest {
 
@@ -101,5 +102,36 @@ class RPNCalculatorTest {
         stack.clear();
         result = RPNCalculator.processRPNExpression("1.1 2.2 + 3.3 + 4.4 +", stack);
         assertEquals(11.0, result, 0.0001);
+    }
+
+    @Test
+    void testCosineOfZero() {
+        Stack<Double> stack = new Stack<>();
+        double result = RPNCalculator.processRPNExpression("0 cos", stack);
+        assertEquals(1.0, result, 0.0001);
+    }
+
+    @Test
+    void testCosineOfPi() {
+        Stack<Double> stack = new Stack<>();
+        double result = RPNCalculator.processRPNExpression(PI + " cos", stack);
+        assertEquals(-1.0, result, 0.0001);
+    }
+
+    @Test
+    void testCosineInComplexExpression() {
+        Stack<Double> stack = new Stack<>();
+        // Calculate 2 * cos(0) + 1
+        double result = RPNCalculator.processRPNExpression("0 cos 2 * 1 +", stack);
+        assertEquals(3.0, result, 0.0001);
+    }
+
+    @Test
+    void testCosineWithInsufficientValues() {
+        Stack<Double> stack = new Stack<>();
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                RPNCalculator.processRPNExpression("cos", stack)
+        );
+        assertEquals("Insufficient values in the stack for operation.", exception.getMessage());
     }
 }
