@@ -45,8 +45,17 @@ public class RPNCalculator {
 
                 stack.push(result);
             } else {
-                // Interpret token as a number and push it onto the stack
-                stack.push(Double.parseDouble(token));
+                try {
+                    // Interpret token as a number and push it onto the stack
+                    stack.push(Double.parseDouble(token));
+                } catch (NumberFormatException e) {
+                    // If it's an empty string, rethrow the original exception
+                    if (token.isEmpty()) {
+                        throw e;
+                    }
+                    // If it's not a valid number, it's an invalid operator
+                    throw new IllegalArgumentException("Invalid operator: " + token);
+                }
             }
         }
 
