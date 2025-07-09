@@ -80,4 +80,16 @@ class RPNCalculatorTest {
         RPNCalculator.processRPNExpression("4 +", stack);
         assertEquals(12.0, stack.peek());
     }
+
+    @Test
+    void testFloatingPointPrecision() {
+        Stack<Double> stack = new Stack<>();
+        assertEquals(0.3, RPNCalculator.processRPNExpression("0.1 0.2 +", stack));
+
+        // Clear the stack for the next test
+        stack.clear();
+
+        // Test with more complex floating point operations
+        assertEquals(0.6, RPNCalculator.processRPNExpression("0.1 0.2 + 0.3 +", stack));
+    }
 }

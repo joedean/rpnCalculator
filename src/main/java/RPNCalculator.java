@@ -1,7 +1,24 @@
 import java.util.Scanner;
 import java.util.Stack;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class RPNCalculator {
+
+    /**
+     * Rounds a double value to a specified number of decimal places.
+     *
+     * @param value The value to round
+     * @param places The number of decimal places to round to
+     * @return The rounded value
+     */
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Decimal places must be >= 0");
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 
     /**
      * Processes a single RPN expression and updates the provided stack.
@@ -12,6 +29,11 @@ public class RPNCalculator {
      */
     public static double processRPNExpression(String expression, Stack<Double> stack) {
         String[] tokens = expression.trim().split("\\s+");
+
+        // Handle empty expression specifically to maintain compatibility with existing tests
+        if (expression.trim().isEmpty()) {
+            throw new NumberFormatException("empty String");
+        }
 
         for (String token : tokens) {
             if (token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/")) {
@@ -43,10 +65,17 @@ public class RPNCalculator {
                         throw new IllegalArgumentException("Invalid operator: " + token);
                 }
 
+                // Round the result to 10 decimal places to avoid floating point precision issues
+                result = round(result, 10);
                 stack.push(result);
             } else {
-                // Interpret token as a number and push it onto the stack
-                stack.push(Double.parseDouble(token));
+                try {
+                    // Interpret token as a number and push it onto the stack
+                    stack.push(Double.parseDouble(token));
+                } catch (NumberFormatException e) {
+                    // If it's not a valid number, it's an invalid operator
+                    throw new IllegalArgumentException("Invalid operator: " + token);
+                }
             }
         }
 
