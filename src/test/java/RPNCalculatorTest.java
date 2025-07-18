@@ -80,4 +80,28 @@ class RPNCalculatorTest {
         RPNCalculator.processRPNExpression("4 +", stack);
         assertEquals(12.0, stack.peek());
     }
+
+    @Test
+    void testFloatingPointAddition() {
+        Stack<Double> stack = new Stack<>();
+        assertEquals(0.3, RPNCalculator.processRPNExpression("0.1 0.2 +", stack));
+    }
+
+    @Test
+    void testFloatingPointMultiplication() {
+        Stack<Double> stack = new Stack<>();
+        assertEquals(0.06, RPNCalculator.processRPNExpression("0.2 0.3 *", stack));
+    }
+
+    @Test
+    void testFloatingPointDivision() {
+        Stack<Double> stack = new Stack<>();
+        assertEquals(0.5, RPNCalculator.processRPNExpression("0.1 0.2 /", stack));
+    }
+
+    @Test
+    void testComplexFloatingPointExpression() {
+        Stack<Double> stack = new Stack<>();
+        assertEquals(0.29, RPNCalculator.processRPNExpression("0.1 0.2 + 0.3 * 0.2 +", stack));
+    }
 }

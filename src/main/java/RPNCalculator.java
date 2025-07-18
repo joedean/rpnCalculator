@@ -1,7 +1,25 @@
 import java.util.Scanner;
 import java.util.Stack;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class RPNCalculator {
+
+    /**
+     * Rounds a double value to a specified number of decimal places.
+     * This helps address floating point precision issues.
+     *
+     * @param value The double value to round.
+     * @param places The number of decimal places to round to.
+     * @return The rounded double value.
+     */
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException("Decimal places must be >= 0");
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
 
     /**
      * Processes a single RPN expression and updates the provided stack.
@@ -11,6 +29,11 @@ public class RPNCalculator {
      * @return The result of the computation (top of the stack after processing).
      */
     public static double processRPNExpression(String expression, Stack<Double> stack) {
+        // Handle empty expression case
+        if (expression.trim().isEmpty()) {
+            throw new NumberFormatException("empty String");
+        }
+
         String[] tokens = expression.trim().split("\\s+");
 
         for (String token : tokens) {
@@ -43,10 +66,16 @@ public class RPNCalculator {
                         throw new IllegalArgumentException("Invalid operator: " + token);
                 }
 
-                stack.push(result);
+                // Round the result to 10 decimal places to handle floating point precision issues
+                stack.push(round(result, 10));
             } else {
-                // Interpret token as a number and push it onto the stack
-                stack.push(Double.parseDouble(token));
+                try {
+                    // Interpret token as a number and push it onto the stack
+                    stack.push(Double.parseDouble(token));
+                } catch (NumberFormatException e) {
+                    // If it's not a valid number, it's an invalid operator
+                    throw new IllegalArgumentException("Invalid operator: " + token);
+                }
             }
         }
 
